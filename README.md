@@ -33,22 +33,22 @@ A modern, cross-platform file sorting application with both GUI and CLI interfac
 
 ## Installation
 
-### Option 1: Download Pre-built Executables (Recommended)
+### Option 1: Download Pre-built Executables (Coming Soon!)
 
-**For end users who just want to use the application:**
+**📦 Pre-built executables will be available soon on the [Releases page](https://github.com/Matthew-123-dev/File_sorting_script/releases)**
 
+Currently available:
+- ✅ **Linux (64-bit)**: Ready for download
+- 🔄 **Windows (64-bit)**: Coming soon
+- 🔄 **macOS (Intel/Apple Silicon)**: Coming soon
+
+**For now, please use Option 2 (Install from Source) below.**
+
+Once releases are published, you'll be able to:
 1. Go to the [Releases page](https://github.com/Matthew-123-dev/File_sorting_script/releases)
-2. Download the appropriate version for your operating system:
-   - **Windows**: `FileSorter-1.0.0-windows-x86_64.zip`
-   - **macOS**: `FileSorter-1.0.0-macos-x86_64.zip` or `FileSorter-1.0.0-macos-arm64.zip`
-   - **Linux**: `FileSorter-1.0.0-linux-x86_64.zip`
+2. Download the appropriate version for your operating system
 3. Extract the downloaded zip file
-4. Run the application:
-   - **Windows**: Double-click `FileSorter.exe`
-   - **macOS**: Double-click `FileSorter`
-   - **Linux**: Double-click `FileSorter` or run `./FileSorter` in terminal
-
-**No Python installation required!** The executables are self-contained.
+4. Run the application directly (no Python installation required!)
 
 ### Option 2: Install from Source
 
