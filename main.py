@@ -1,3 +1,16 @@
+#!/usr/bin/env python3
+"""
+File Sorter - Core Application Module
+
+A modern file sorting application with both GUI and CLI interfaces.
+Organizes files by type, date, alphabetically, or size.
+
+Author: Olagunju Matthew
+Email: olagunjunifemi6@gmail.com
+Repository: https://github.com/Matthew-123-dev/File_sorting_script
+License: MIT
+"""
+
 import os
 import time
 import re

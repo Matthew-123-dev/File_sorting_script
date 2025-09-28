@@ -1,3 +1,16 @@
+#!/usr/bin/env python3
+"""
+File Sorter Pro - GUI Interface Module
+
+Modern CustomTkinter-based graphical user interface for the File Sorter application.
+Features dark theme, progress tracking, and intuitive file sorting controls.
+
+Author: Olagunju Matthew
+Email: olagunjunifemi6@gmail.com
+Repository: https://github.com/Matthew-123-dev/File_sorting_script
+License: MIT
+"""
+
 import customtkinter as ctk
 import tkinter as tk
 from tkinter import filedialog, messagebox

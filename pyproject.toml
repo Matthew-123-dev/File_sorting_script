@@ -7,7 +7,14 @@ name = "file-sorter"
 version = "1.0.0"
 description = "A modern file sorting application with GUI interface"
 readme = "README.md"
+authors = [
+    {name = "Olagunju Matthew", email = "olagunjunifemi6@gmail.com"},
+]
+maintainers = [
+    {name = "Olagunju Matthew", email = "olagunjunifemi6@gmail.com"},
+]
 requires-python = ">=3.7"
+license = {text = "MIT"}
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: End Users/Desktop",
@@ -37,8 +44,10 @@ file-sorter = "main:main"
 file-sorter-gui = "gui:main"
 
 [project.urls]
-Homepage = "https://github.com/yourusername/file-sorter"
-Issues = "https://github.com/yourusername/file-sorter/issues"
+Homepage = "https://github.com/Matthew-123-dev/File_sorting_script"
+Repository = "https://github.com/Matthew-123-dev/File_sorting_script"
+Issues = "https://github.com/Matthew-123-dev/File_sorting_script/issues"
+Download = "https://github.com/Matthew-123-dev/File_sorting_script/releases"
 
 [tool.setuptools.packages.find]
 where = ["."]

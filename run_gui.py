@@ -1,7 +1,14 @@
 #!/usr/bin/env python3
 """
-File Sorter - GUI Launcher
-A modern file sorting application with a beautiful GUI interface.
+File Sorter Pro - GUI Launcher
+
+Launcher script for the File Sorter Pro GUI application.
+A modern file sorting application with a beautiful CustomTkinter interface.
+
+Author: Olagunju Matthew
+Email: olagunjunifemi6@gmail.com
+Repository: https://github.com/Matthew-123-dev/File_sorting_script
+License: MIT
 """
 
 import sys

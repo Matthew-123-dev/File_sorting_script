@@ -1,6 +1,14 @@
 # File Sorter Pro
 
-A modern, user-friendly GUI application for organizing and sorting files by type, date, alphabetically, or size.
+A modern, cross-platform file sorting application with both GUI and CLI interfaces. Organize your files efficiently by type, date, alphabetically, or size with a beautiful dark-themed interface.
+
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Python](https://img.shields.io/badge/python-3.7+-blue.svg)
+![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)
+
+**Author:** Olagunju Matthew  
+**Contact:** olagunjunifemi6@gmail.com  
+**Repository:** https://github.com/Matthew-123-dev/File_sorting_script
 
 ## Features
 
@@ -25,30 +33,156 @@ A modern, user-friendly GUI application for organizing and sorting files by type
 
 ## Installation
 
-### Prerequisites
-- Python 3.7 or higher
-- tkinter (usually comes with Python, or install with `sudo apt install python3-tk` on Ubuntu/Debian)
+### Option 1: Download Pre-built Executables (Recommended)
 
-### Setup
-1. Clone or download this repository
-2. Install dependencies:
-   ```bash
+**For end users who just want to use the application:**
+
+1. Go to the [Releases page](https://github.com/Matthew-123-dev/File_sorting_script/releases)
+2. Download the appropriate version for your operating system:
+   - **Windows**: `FileSorter-1.0.0-windows-x86_64.zip`
+   - **macOS**: `FileSorter-1.0.0-macos-x86_64.zip` or `FileSorter-1.0.0-macos-arm64.zip`
+   - **Linux**: `FileSorter-1.0.0-linux-x86_64.zip`
+3. Extract the downloaded zip file
+4. Run the application:
+   - **Windows**: Double-click `FileSorter.exe`
+   - **macOS**: Double-click `FileSorter`
+   - **Linux**: Double-click `FileSorter` or run `./FileSorter` in terminal
+
+**No Python installation required!** The executables are self-contained.
+
+### Option 2: Install from Source
+
+**For developers or users who want to run from source:**
+
+#### Prerequisites
+- **Python 3.7 or higher**
+- **Git** (to clone the repository)
+
+#### Platform-Specific Setup
+
+<details>
+<summary><b>🪟 Windows</b></summary>
+
+1. **Install Python**:
+   - Download from [python.org](https://www.python.org/downloads/)
+   - During installation, check "Add Python to PATH"
+
+2. **Install Git**:
+   - Download from [git-scm.com](https://git-scm.com/download/win)
+
+3. **Clone and Setup**:
+   ```cmd
+   git clone https://github.com/Matthew-123-dev/File_sorting_script.git
+   cd File_sorting_script
+   python -m venv .venv
+   .venv\Scripts\activate
    pip install -r requirements.txt
    ```
 
+4. **Run the Application**:
+   ```cmd
+   python gui.py
+   ```
+
+</details>
+
+<details>
+<summary><b>🍎 macOS</b></summary>
+
+1. **Install Python and Git**:
+   ```bash
+   # Using Homebrew (recommended)
+   brew install python git
+   
+   # Or download Python from python.org
+   ```
+
+2. **Clone and Setup**:
+   ```bash
+   git clone https://github.com/Matthew-123-dev/File_sorting_script.git
+   cd File_sorting_script
+   python3 -m venv .venv
+   source .venv/bin/activate
+   pip install -r requirements.txt
+   ```
+
+3. **Run the Application**:
+   ```bash
+   python gui.py
+   ```
+
+</details>
+
+<details>
+<summary><b>🐧 Linux</b></summary>
+
+1. **Install Prerequisites**:
+   ```bash
+   # Ubuntu/Debian
+   sudo apt update
+   sudo apt install python3 python3-pip python3-venv python3-tk git
+   
+   # Fedora/CentOS/RHEL
+   sudo dnf install python3 python3-pip python3-tkinter git
+   
+   # Arch Linux
+   sudo pacman -S python python-pip tk git
+   ```
+
+2. **Clone and Setup**:
+   ```bash
+   git clone https://github.com/Matthew-123-dev/File_sorting_script.git
+   cd File_sorting_script
+   python3 -m venv .venv
+   source .venv/bin/activate
+   pip install -r requirements.txt
+   ```
+
+3. **Run the Application**:
+   ```bash
+   python gui.py
+   ```
+
+</details>
+
+### Option 3: Build Your Own Executable
+
+**To create your own executable for distribution:**
+
+1. Follow the "Install from Source" steps above
+2. Install PyInstaller:
+   ```bash
+   pip install pyinstaller>=5.0
+   ```
+3. Build the executable:
+   ```bash
+   ./build_app.sh    # Linux/macOS
+   build_app.bat     # Windows (if available)
+   ```
+4. Find your executable in the `releases/` directory
+
 ## Usage
 
-### GUI Application (Recommended)
-Run the GUI version:
+### Pre-built Executable (Easiest)
+1. **Download** the appropriate executable for your platform
+2. **Extract** the zip file
+3. **Run**:
+   - **GUI Version**: Double-click `FileSorter` (or `FileSorter.exe` on Windows)
+   - **CLI Version**: Open terminal/command prompt and run `./file-sorter-cli` (or `file-sorter-cli.exe` on Windows)
+
+### From Source Code
 ```bash
+# Activate virtual environment first (if using)
+source .venv/bin/activate  # Linux/macOS
+# or
+.venv\Scripts\activate     # Windows
+
+# GUI Application (Recommended)
 python gui.py
 # or
 python run_gui.py
-```
 
-### Command Line Interface
-For CLI usage:
-```bash
+# Command Line Interface
 python main.py
 ```
 
@@ -158,10 +292,91 @@ To add new sorting methods:
 2. Implement the sorting method in `FileSorterApp` class
 3. The GUI will automatically detect and include the new method
 
+## System Requirements
+
+### Minimum Requirements
+- **OS**: Windows 10+, macOS 10.14+, or Linux (most distributions)
+- **RAM**: 256MB available memory
+- **Storage**: 50MB free space
+- **Display**: 1024x768 resolution or higher
+
+### For Source Installation
+- **Python**: 3.7 or higher
+- **Libraries**: customtkinter, tkinter (usually included with Python)
+
 ## License
 
-This project is open source. Feel free to modify and distribute.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+```
+MIT License
+
+Copyright (c) 2025 Olagunju Matthew
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+## Support
+
+- **Issues**: [GitHub Issues](https://github.com/Matthew-123-dev/File_sorting_script/issues)
+- **Email**: olagunjunifemi6@gmail.com
+- **Discussions**: [GitHub Discussions](https://github.com/Matthew-123-dev/File_sorting_script/discussions)
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit pull requests or open issues for bugs and feature requests.
+Contributions are welcome! Here's how you can help:
+
+1. **Fork** the repository
+2. **Create** a feature branch: `git checkout -b feature/amazing-feature`
+3. **Commit** your changes: `git commit -m 'Add some amazing feature'`
+4. **Push** to the branch: `git push origin feature/amazing-feature`
+5. **Open** a Pull Request
+
+### Development Setup
+```bash
+git clone https://github.com/Matthew-123-dev/File_sorting_script.git
+cd File_sorting_script
+python -m venv .venv
+source .venv/bin/activate  # or .venv\Scripts\activate on Windows
+pip install -r requirements.txt
+pip install -e .  # Install in development mode
+```
+
+## Changelog
+
+### Version 1.0.0 (2025-09-28)
+- Initial release
+- GUI interface with CustomTkinter
+- CLI interface
+- Four sorting methods (type, date, alphabetical, size)
+- Cross-platform executables
+- Progress tracking and error handling
+
+## Roadmap
+
+- [ ] Drag and drop file selection
+- [ ] Custom sorting rules
+- [ ] Batch processing multiple folders
+- [ ] Integration with cloud storage services
+- [ ] Dark/Light theme toggle
+- [ ] Localization support
+
+---
+
+**Made with ❤️ by Olagunju Matthew**
