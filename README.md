@@ -1,4 +1,4 @@
-# File Sorter Pro
+# File Sorter 
 
 A modern, cross-platform file sorting application with both GUI and CLI interfaces. Organize your files efficiently by type, date, alphabetically, or size with a beautiful dark-themed interface.
 
