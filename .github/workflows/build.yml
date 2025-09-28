@@ -1,230 +1,249 @@
-name: Build Cross-Platform Executables
+name: Build and Release
 
 on:
   push:
     tags:
-      - 'v*'  # Triggers on version tags like v1.0.0
-  workflow_dispatch:  # Allows manual triggering
+      - 'v*'
+  workflow_dispatch:
 
 jobs:
   build:
-    name: Build on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         include:
           - os: ubuntu-latest
             platform: linux
-            arch: x86_64
           - os: windows-latest
             platform: windows
-            arch: x86_64
           - os: macos-latest
             platform: macos
-            arch: x86_64
-          - os: macos-latest
-            platform: macos
-            arch: arm64
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.10'
 
-    - name: Install dependencies
+    - name: Install system dependencies (Ubuntu)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y python3-tk
+
+    - name: Install Python dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install customtkinter>=5.2.0
         pip install pyinstaller>=5.0
 
-    - name: Build GUI executable (Linux/macOS)
-      if: matrix.os != 'windows-latest'
+    - name: Create spec files
       run: |
-        pyinstaller gui.py \
-          --onefile \
-          --windowed \
-          --name="FileSorter" \
-          --add-data "main.py:." \
-          --hidden-import customtkinter \
-          --hidden-import tkinter \
-          --hidden-import PIL \
-          --hidden-import PIL._tkinter_finder \
-          --clean \
-          --noconfirm
+        python -c "
+        import PyInstaller.config
+        PyInstaller.config.CONF['distpath'] = './dist'
+        
+        # GUI spec
+        gui_spec = '''
+# -*- mode: python ; coding: utf-8 -*-
+a = Analysis(
+    ['gui.py'],
+    pathex=[],
+    binaries=[],
+    datas=[('main.py', '.')],
+    hiddenimports=['customtkinter', 'tkinter', 'PIL._tkinter_finder'],
+    hookspath=[],
+    hooksconfig={},
+    runtime_hooks=[],
+    excludes=['matplotlib', 'numpy', 'scipy'],
+    win_no_prefer_redirects=False,
+    win_private_assemblies=False,
+    cipher=None,
+    noarchive=False,
+)
+pyz = PYZ(a.pure, a.zipped_data, cipher=None)
+exe = EXE(
+    pyz,
+    a.scripts,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
+    [],
+    name='FileSorter',
+    debug=False,
+    bootloader_ignore_signals=False,
+    strip=False,
+    upx=True,
+    upx_exclude=[],
+    runtime_tmpdir=None,
+    console=False,
+    disable_windowed_traceback=False,
+    target_arch=None,
+    codesign_identity=None,
+    entitlements_file=None,
+)
+'''
+        
+        # CLI spec  
+        cli_spec = '''
+# -*- mode: python ; coding: utf-8 -*-
+a = Analysis(
+    ['main.py'],
+    pathex=[],
+    binaries=[],
+    datas=[],
+    hiddenimports=[],
+    hookspath=[],
+    hooksconfig={},
+    runtime_hooks=[],
+    excludes=['tkinter', 'customtkinter', 'PIL'],
+    win_no_prefer_redirects=False,
+    win_private_assemblies=False,
+    cipher=None,
+    noarchive=False,
+)
+pyz = PYZ(a.pure, a.zipped_data, cipher=None)
+exe = EXE(
+    pyz,
+    a.scripts,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
+    [],
+    name='file-sorter-cli',
+    debug=False,
+    bootloader_ignore_signals=False,
+    strip=False,
+    upx=True,
+    upx_exclude=[],
+    runtime_tmpdir=None,
+    console=True,
+    disable_windowed_traceback=False,
+    target_arch=None,
+    codesign_identity=None,
+    entitlements_file=None,
+)
+'''
+        
+        with open('gui.spec', 'w') as f:
+            f.write(gui_spec)
+        with open('cli.spec', 'w') as f:
+            f.write(cli_spec)
+        "
 
-    - name: Build CLI executable (Linux/macOS)
-      if: matrix.os != 'windows-latest'
+    - name: Build executables
       run: |
-        pyinstaller main.py \
-          --onefile \
-          --name="file-sorter-cli" \
-          --console \
-          --clean \
-          --noconfirm
+        pyinstaller gui.spec
+        pyinstaller cli.spec
 
-    - name: Build GUI executable (Windows)
-      if: matrix.os == 'windows-latest'
-      run: |
-        pyinstaller gui.py `
-          --onefile `
-          --windowed `
-          --name="FileSorter" `
-          --add-data "main.py;." `
-          --hidden-import customtkinter `
-          --hidden-import tkinter `
-          --hidden-import PIL `
-          --hidden-import PIL._tkinter_finder `
-          --clean `
-          --noconfirm
-
-    - name: Build CLI executable (Windows)
-      if: matrix.os == 'windows-latest'
-      run: |
-        pyinstaller main.py `
-          --onefile `
-          --name="file-sorter-cli" `
-          --console `
-          --clean `
-          --noconfirm
-
-    - name: Get version from tag
+    - name: Get version
       id: version
+      shell: bash
       run: |
-        if [ "${{ github.ref_type }}" = "tag" ]; then
+        if [[ $GITHUB_REF == refs/tags/* ]]; then
           echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
         else
-          echo "version=dev-$(date +%Y%m%d)" >> $GITHUB_OUTPUT
+          echo "version=dev" >> $GITHUB_OUTPUT
         fi
-      shell: bash
 
-    - name: Create distribution directory (Linux/macOS)
-      if: matrix.os != 'windows-latest'
+    - name: Create release package
+      shell: bash
       run: |
-        VERSION=${{ steps.version.outputs.version }}
-        DIST_NAME="FileSorter-${VERSION}-${{ matrix.platform }}-${{ matrix.arch }}"
-        mkdir -p releases/${DIST_NAME}
+        VERSION="${{ steps.version.outputs.version }}"
+        PLATFORM="${{ matrix.platform }}"
+        ARCH="x86_64"
         
-        # Copy executables
-        cp dist/FileSorter releases/${DIST_NAME}/ || echo "GUI executable not found"
-        cp dist/file-sorter-cli releases/${DIST_NAME}/ || echo "CLI executable not found"
+        if [[ "$PLATFORM" == "windows" ]]; then
+          EXE_EXT=".exe"
+        else
+          EXE_EXT=""
+        fi
+        
+        DIST_NAME="FileSorter-${VERSION}-${PLATFORM}-${ARCH}"
+        mkdir -p "releases/${DIST_NAME}"
+        
+        # Copy executables if they exist
+        if [[ -f "dist/FileSorter${EXE_EXT}" ]]; then
+          cp "dist/FileSorter${EXE_EXT}" "releases/${DIST_NAME}/"
+        fi
+        
+        if [[ -f "dist/file-sorter-cli${EXE_EXT}" ]]; then
+          cp "dist/file-sorter-cli${EXE_EXT}" "releases/${DIST_NAME}/"
+        fi
         
         # Copy documentation
-        cp README.md releases/${DIST_NAME}/
-        cp requirements.txt releases/${DIST_NAME}/
-        cp LICENSE releases/${DIST_NAME}/ || echo "LICENSE not found"
+        cp README.md "releases/${DIST_NAME}/" || echo "README.md not found"
+        cp requirements.txt "releases/${DIST_NAME}/" || echo "requirements.txt not found"
+        cp LICENSE "releases/${DIST_NAME}/" || echo "LICENSE not found"
         
         # Create install instructions
-        cat > releases/${DIST_NAME}/INSTALL.txt << EOF
-        File Sorter Pro - Installation Instructions
-        ==========================================
+        cat > "releases/${DIST_NAME}/INSTALL.txt" << EOF
+        File Sorter Pro v${VERSION}
+        ==========================
         
-        GUI Version:
-        - Double-click 'FileSorter' to start the graphical interface
+        GUI Version: Double-click FileSorter${EXE_EXT}
+        CLI Version: Run file-sorter-cli${EXE_EXT} from terminal
         
-        CLI Version:
-        - Run './file-sorter-cli' from terminal for command-line interface
-        
-        System Requirements:
-        - No additional software required (standalone executables)
-        - Compatible with ${{ matrix.platform }} (${{ matrix.arch }})
-        
-        Version: ${VERSION}
-        Built on: $(date)
-        Platform: ${{ matrix.platform }}-${{ matrix.arch }}
+        No Python installation required!
+        Platform: ${PLATFORM}-${ARCH}
         EOF
         
-        # Make executables executable
-        chmod +x releases/${DIST_NAME}/FileSorter 2>/dev/null || true
-        chmod +x releases/${DIST_NAME}/file-sorter-cli 2>/dev/null || true
-        
-        # Create zip archive
+        # Create archive
         cd releases
-        zip -r ${DIST_NAME}.zip ${DIST_NAME}/
+        if [[ "$PLATFORM" == "windows" ]]; then
+          powershell -Command "Compress-Archive -Path '${DIST_NAME}' -DestinationPath '${DIST_NAME}.zip'"
+        else
+          zip -r "${DIST_NAME}.zip" "${DIST_NAME}/"
+        fi
 
-    - name: Create distribution directory (Windows)
-      if: matrix.os == 'windows-latest'
-      run: |
-        $VERSION = "${{ steps.version.outputs.version }}"
-        $DIST_NAME = "FileSorter-$VERSION-${{ matrix.platform }}-${{ matrix.arch }}"
-        New-Item -ItemType Directory -Force -Path "releases\$DIST_NAME"
-        
-        # Copy executables
-        Copy-Item "dist\FileSorter.exe" "releases\$DIST_NAME\" -ErrorAction SilentlyContinue
-        Copy-Item "dist\file-sorter-cli.exe" "releases\$DIST_NAME\" -ErrorAction SilentlyContinue
-        
-        # Copy documentation
-        Copy-Item "README.md" "releases\$DIST_NAME\"
-        Copy-Item "requirements.txt" "releases\$DIST_NAME\"
-        Copy-Item "LICENSE" "releases\$DIST_NAME\" -ErrorAction SilentlyContinue
-        
-        # Create install instructions
-        @"
-        File Sorter Pro - Installation Instructions
-        ==========================================
-        
-        GUI Version:
-        - Double-click 'FileSorter.exe' to start the graphical interface
-        
-        CLI Version:
-        - Run 'file-sorter-cli.exe' from command prompt for command-line interface
-        
-        System Requirements:
-        - No additional software required (standalone executables)
-        - Compatible with ${{ matrix.platform }} (${{ matrix.arch }})
-        
-        Version: $VERSION
-        Built on: $(Get-Date)
-        Platform: ${{ matrix.platform }}-${{ matrix.arch }}
-        "@ | Out-File -FilePath "releases\$DIST_NAME\INSTALL.txt" -Encoding UTF8
-        
-        # Create zip archive
-        Compress-Archive -Path "releases\$DIST_NAME" -DestinationPath "releases\$DIST_NAME.zip"
-
-    - name: Upload build artifacts
+    - name: Upload artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: FileSorter-${{ steps.version.outputs.version }}-${{ matrix.platform }}-${{ matrix.arch }}
+        name: FileSorter-${{ steps.version.outputs.version }}-${{ matrix.platform }}-x86_64
         path: releases/*.zip
 
-    - name: Release
-      if: github.ref_type == 'tag'
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v3
+      with:
+        path: artifacts
+
+    - name: Move files to release directory
+      run: |
+        mkdir -p release-files
+        find artifacts -name "*.zip" -exec cp {} release-files/ \;
+        ls -la release-files/
+
+    - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
-        files: releases/*.zip
+        files: release-files/*.zip
         draft: false
         prerelease: false
         generate_release_notes: true
         body: |
-          ## File Sorter Pro ${{ steps.version.outputs.version }}
+          ## File Sorter Pro ${{ github.ref_name }}
           
-          A modern, cross-platform file sorting application with both GUI and CLI interfaces.
+          Cross-platform file sorting application with GUI and CLI interfaces.
           
-          ### 🎯 Features
-          - **Modern GUI** with dark theme and real-time progress tracking
-          - **4 Sorting Methods**: File type, Date, Alphabetical, Size
-          - **Cross-platform**: Windows, macOS, and Linux support
-          - **Safety features**: Path checking and error handling
-          - **Both GUI and CLI** interfaces available
+          ### Downloads
+          - **Linux**: FileSorter-*-linux-x86_64.zip
+          - **Windows**: FileSorter-*-windows-x86_64.zip  
+          - **macOS**: FileSorter-*-macos-x86_64.zip
           
-          ### 📦 Downloads
-          Choose the appropriate version for your operating system:
-          
-          ### 🚀 Quick Start
+          ### Quick Start
           1. Download the appropriate file for your OS
           2. Extract the zip file
-          3. Run `FileSorter` (GUI) or `file-sorter-cli` (CLI)
-          4. No Python installation required!
+          3. Run FileSorter (GUI) or file-sorter-cli (CLI)
           
-          ### 📋 System Requirements
-          - **OS**: Windows 10+, macOS 10.14+, or Linux
-          - **RAM**: 256MB available memory
-          - **Storage**: 50MB free space
-          
-          ### 🐛 Bug Reports
-          Report issues at: https://github.com/Matthew-123-dev/File_sorting_script/issues
+          No Python installation required!
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
