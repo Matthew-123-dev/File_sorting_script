@@ -223,18 +223,34 @@ build/
 dist/
 releases/
 
+# PyInstaller spec files (temporary)
+*_manual.spec
+gui_manual.spec
+cli_manual.spec
+gui.spec
+cli.spec
+
+# Temporary backup files
+*.backup
+*_backup.yml
+build-old.yml.backup
+
 # Temporary files
 *.tmp
 *.temp
 *~
 
-# Log files
+# Log files  
 *.log
+warn-*.txt
 
 # Test directories
 test_files/
 test_data/
 temp/
+
+# Documentation updates (temporary)
+README_update_after_release.txt
 
 # IDE and editor files
 *.swp

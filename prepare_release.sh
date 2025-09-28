@@ -80,7 +80,7 @@ print_status "GitHub Release Creation Steps:"
 echo "1. Go to: https://github.com/Matthew-123-dev/File_sorting_script/releases"
 echo "2. Click 'Create a new release'"
 echo "3. Choose tag: v${VERSION}"
-echo "4. Release title: 'File Sorter Pro v${VERSION}'"
+echo "4. Release title: 'File Sorter v${VERSION}'"
 echo "5. Upload the zip files from releases/ directory"
 echo "6. Add release notes (see below)"
 
