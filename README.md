@@ -33,18 +33,16 @@ A modern, cross-platform file sorting application with both GUI and CLI interfac
 
 ## Installation
 
-### Option 1: Download Pre-built Executables (Coming Soon!)
+### Option 1: Download Pre-built Executables
 
-**📦 Pre-built executables will be available soon on the [Releases page](https://github.com/Matthew-123-dev/File_sorting_script/releases)**
+**📦 Pre-built executables are now available on the [Releases page](https://github.com/Matthew-123-dev/File_sorting_script/releases)**
 
 Currently available:
 - ✅ **Linux (64-bit)**: Ready for download
-- 🔄 **Windows (64-bit)**: Coming soon
+- ✅ **Windows (64-bit)**: Ready for download
 - 🔄 **macOS (Intel/Apple Silicon)**: Coming soon
 
-**For now, please use Option 2 (Install from Source) below.**
-
-Once releases are published, you'll be able to:
+In order to run the application, follow these steps:
 1. Go to the [Releases page](https://github.com/Matthew-123-dev/File_sorting_script/releases)
 2. Download the appropriate version for your operating system
 3. Extract the downloaded zip file
