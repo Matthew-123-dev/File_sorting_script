@@ -366,15 +366,6 @@ pip install -e .  # Install in development mode
 - Cross-platform executables
 - Progress tracking and error handling
 
-## Roadmap
-
-- [ ] Drag and drop file selection
-- [ ] Custom sorting rules
-- [ ] Batch processing multiple folders
-- [ ] Integration with cloud storage services
-- [ ] Dark/Light theme toggle
-- [ ] Localization support
-
 ---
 
 **Made with ❤️ by Olagunju Matthew**
